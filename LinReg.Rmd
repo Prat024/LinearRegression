@@ -1,0 +1,113 @@
+---
+title: "Linear Regression"
+author: "Pratyush Pati"
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r LinReg}
+# summary of metro and energy columns, all rows
+sts.met.ener <- subset(states.data, select = c("metro", "energy"))
+
+# plot between metro and energy
+plot(sts.met.ener)
+
+# summary between metro and energy
+summary(sts.met.ener)
+
+# Linear Regression Model for metro and energy
+sat.mod2 <- lm(energy ~ metro,  # regression formula
+               data = na.omit(states.data)) # data set ommiting NA values
+
+# Summarize of linear regression
+summary(sat.mod2) # show regression coefficients table
+
+# Plot the linear regression model
+par(mar = c(4, 4, 2, 2), mfrow = c(1, 2)) #optional
+plot(sat.mod2, which = c(1, 2)) # "which" argument optional
+
+# Adding additional predictors: waste and toxic 
+
+############ Waste v. Energy ##########################
+# summary of waste and energy columns, all rows
+sts.wast.ener <- subset(states.data, select = c("waste", "energy"))
+
+# plot between waste and energy
+plot(sts.wast.ener)
+
+# summary between waste and energy
+summary(sts.wast.ener)
+
+############ Toxic v. Energy ##########################
+# summary of toxic and energy columns, all rows
+sts.tox.ener <- subset(states.data, select = c("toxic", "energy"))
+
+# plot between toxic and energy
+plot(sts.tox.ener)
+
+# summary between toxic and energy
+summary(sts.tox.ener)
+
+# Linear Regression with waste and toxic predictors
+sat.energy.mod2 <-  lm(energy ~ metro + waste + toxic,
+                      data = na.omit(states.data))
+
+# Summary of LR with new predictors
+summary(sat.energy.mod2)
+
+# Plot the new linear regression model
+par(mar = c(4, 4, 2, 2), mfrow = c(1, 2)) #optional
+plot(sat.energy.mod2, which = c(1, 2)) # "which" argument optional
+
+####### Results ##############
+##   When looking at the energy consumed per capita (energy)
+##   from the percentage of residents living in metropolitan areas (metro)
+##   only provided R-squared value of 0.09714 showing metro was not a significant
+##   predictor for energy. Adding in toxic and waste helped the model increase 
+##   R-squared value to 0.4015, which led us to the conclusion of being a better model.
+
+## Exercise: interactions and factors
+## ────────────────────────────────────────
+
+##   Use the states data set.
+
+##   1. Add on to the regression equation that you created in exercise 1 by
+##      generating an interaction term and testing the interaction.
+
+#Add the toxic as an interaction to the model
+sat.energy.by.toxic <- lm(energy ~ metro*toxic,
+                             data=states.data) 
+#Show the results
+coef(summary(sat.energy.by.toxic))
+
+##   2. Try adding region to the model. Are there significant differences
+##      across the four regions?
+
+#Add region to the model
+sat.region2 <- lm(energy ~ region,
+                 data=states.data) 
+#Show the results
+coef(summary(sat.region2)) # show regression coefficients table
+
+# change the reference group
+coef(summary(lm(energy ~ C(region, base=4),
+                data=states.data)))
+
+# change the coding scheme
+coef(summary(lm(energy ~ C(region, contr.helmert),
+                data=states.data)))
+
+####### Results
+## From the summary, we can see there isn't a significant difference across 
+## the 4 regions when using region to predict energy, aside from N. East region
+## which has a p-value of 0.0141 at a 0.01 significance level.
+
+```
+
+
+
+
